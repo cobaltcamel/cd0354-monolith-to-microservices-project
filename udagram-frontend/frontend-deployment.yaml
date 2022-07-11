@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app: frontend
+  template: 
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: udagram-frontend
+        image: cobaltcamel/udagram-frontend:v7

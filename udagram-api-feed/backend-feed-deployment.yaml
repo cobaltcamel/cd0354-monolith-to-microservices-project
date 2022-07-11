@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-feed
+  labels:
+    app: backend-feed
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-feed
+  template:
+    metadata:
+      labels:
+        app: backend-feed
+    spec:
+      containers:
+      - name: udagram-api-feed
+        image: cobaltcamel/udagram-api-feed:v1   
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "512m"
+          requests:
+            cpu: "256m"
+        env:
+        - name: AWS_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: AWS_BUCKET_2
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: JWT_SECRET
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: POSTGRES_DB
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: POSTGRES_HOST
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: POSTGRES_USERNAME
+        - name: URL
+          valueFrom:
+            configMapKeyRef:
+              name: config-map
+              key: URL
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: config-map
+              key: AWS_REGION
+        - name: AWS_PROFILE
+          valueFrom:
+            configMapKeyRef:
+              name: config-map
+              key: AWS_PROFILE
+        volumeMounts:
+        - name: aws-secret
+          mountPath: "/root/.aws/"
+          readOnly: true        
+      restartPolicy: Always
+      volumes:
+      - name: aws-secret
+        secret:
+          secretName: aws-secret
